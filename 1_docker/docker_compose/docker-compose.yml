@@ -1,0 +1,20 @@
+services:
+  web:
+    image: wojcho/task3_jvm:latest
+    container_name: web_container
+    ports:
+      - "8080:80"
+    networks:
+      - mynetwork
+
+  app:
+    image: wojcho/task4_hello_world
+    container_name: app_container
+    ports:
+      - "8080:80"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
