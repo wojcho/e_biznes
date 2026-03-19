@@ -5,7 +5,7 @@ Należy stworzyć aplikację na frameworku Play lub Scalatra.
 - :white_check_mark: 3.5 Do kontrolera należy stworzyć endpointy zgodnie z CRUD - dane pobierane z listy [Commit](https://github.com/wojcho/e_biznes/commit/02af5a0251e88c186244b999de02d6f521911b04)
 - :white_check_mark: 4.0 Należy stworzyć kontrolery do Kategorii oraz Koszyka + endpointy zgodnie z CRUD [Commit](https://github.com/wojcho/e_biznes/commit/d12fc23d3db90d15628e222b297c6fb58083f881)
 - :white_check_mark: 4.5 Należy aplikację uruchomić na dockerze (stworzyć obraz) oraz dodać skrypt uruchamiający aplikację via ngrok [Commit](https://github.com/wojcho/e_biznes/commit/a65a703202852d194dc3f8e62c9829557eca5d08)
-- :x: 5.0 Należy dodać konfigurację CORS dla dwóch hostów dla metod CRUD [Commit]()
+- :white_check_mark: 5.0 Należy dodać konfigurację CORS dla dwóch hostów dla metod CRUD [Commit](https://github.com/wojcho/e_biznes/commit/7515480b29b9d7ab2fd5500b00a51c344904cba1)
 
 Kontrolery mogą bazować na listach zamiast baz danych.
 
