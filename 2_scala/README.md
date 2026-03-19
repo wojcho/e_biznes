@@ -20,7 +20,7 @@ CRUD dla produktów:
 
 W implementacji korzystano z SQLite do przechowywania danych.
 
-## Uruchamianie
+Uruchamianie
 
 ```sh
 ./build_image.sh
@@ -30,3 +30,7 @@ W implementacji korzystano z SQLite do przechowywania danych.
 Możliwa jest wtedy interakcja z API z poziomu przeglądarki [https://robbyn-balanceable-crampingly.ngrok-free.dev](https://robbyn-balanceable-crampingly.ngrok-free.dev).
 
 Dostępny jest także plik `demo.sh` za pomocą `curl` pokazujący przykładowe działanie aplikacji (w wersji lokalnej, chociaż możliwe byłoby to także wraz z `ngrok`).
+
+---
+
+[Nagranie](https://github.com/wojcho/e_biznes/blob/main/2_scala/video.mp4)
