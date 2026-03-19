@@ -20,7 +20,7 @@ CRUD dla produktów:
 
 W implementacji korzystano z SQLite do przechowywania danych.
 
-## Uruchamianie##
+## Uruchamianie
 
 ```sh
 ./build_image.sh

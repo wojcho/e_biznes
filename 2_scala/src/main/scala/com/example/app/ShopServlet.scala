@@ -12,7 +12,7 @@ class ShopServlet(
   basketStorage: BasketStorage,
   categoryStorage: CategoryStorage,
   junctionStorage: JunctionStorage
-) extends ScalatraServlet {
+) extends ScalatraServlet with CorsSupport { // https://scalatra.org/guides/3.0/web-services/cors.html https://javadoc.io/doc/org.scalatra/scalatra-unidoc_2.13/3.0.0/org/scalatra/CorsSupport.html https://javadoc.io/doc/org.scalatra/scalatra-unidoc_2.13/3.0.0/org/scalatra/CorsSupport$.html
 
   // Boilerplate
 
