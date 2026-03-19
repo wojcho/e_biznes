@@ -1,39 +1,20 @@
 package com.example.app
 
-// Almost entirely no-op controller
+class ProductsController(storage: ProductStorage, junctions: JunctionStorage) extends BaseController[Product] with CrudController[Product] {
 
-class ShopController(storage: ProductStorage) {
+  // Basic CRUD
 
-  def getAllProducts(): ControllerResult[List[Product]] =
-    Success(storage.findAllProducts())
+  def findAll() = wrapList(storage.findAllProducts())
 
-  def getProduct(id: Int): ControllerResult[Product] =
-    storage.findProduct(id) match {
-      case Some(product) => Success(product)
-      case None          => Failure("Product not found", 404)
-    }
+  def find(id: Int) = wrapOption(storage.findProduct(id), "Product not found")
 
-  def addProduct(product: Product): ControllerResult[Map[String, Int]] = {
-    val rows = storage.addProduct(product)
-    if (rows >= 1)
-      Success(Map("changedRowsAmount" -> rows))
-    else
-      Failure("Could not add the product", 500)
-  }
+  def add(product: Product) = wrapChangedAmount(storage.addProduct(product), "Could not add the product")
 
-  def updateProduct(id: Int, product: Product): ControllerResult[Map[String, Int]] = {
-    val rows = storage.updateProduct(id, product)
-    if (rows >= 1)
-      Success(Map("changedRowsAmount" -> rows))
-    else
-      Failure("Could not update the product", 500)
-  }
+  def update(id: Int, product: Product) = wrapChangedAmount(storage.updateProduct(id, product), "Could not update the product")
 
-  def deleteProduct(id: Int): ControllerResult[Map[String, Int]] = {
-    val rows = storage.deleteProduct(id)
-    if (rows >= 1)
-      Success(Map("changedRowsAmount" -> rows))
-    else
-      Failure("Could not delete product", 500)
-  }
+  def delete(id: Int) = wrapChangedAmountAllowZero(storage.deleteProduct(id), "Could not delete product")
+
+  // Junction-related
+  def deleteReferencesToProduct(id: Int) =
+    wrapChangedAmountAllowZero(junctions.deleteReferencesToProduct(id), "Could not delete product references")
 }

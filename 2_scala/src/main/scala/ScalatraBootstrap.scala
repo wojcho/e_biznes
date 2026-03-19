@@ -4,6 +4,6 @@ import jakarta.servlet.ServletContext
 
 class ScalatraBootstrap extends LifeCycle {
   override def init(context: ServletContext): Unit = {
-    context.mount(new ShopServlet(new ProductStorage()), "/*")
+    context.mount(new ShopServlet(new ProductStorage(), new BasketStorage(), new CategoryStorage(), new JunctionStorage()), "/*")
   }
 }
