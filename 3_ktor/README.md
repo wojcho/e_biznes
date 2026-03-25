@@ -10,6 +10,8 @@ Aplikację należy uruchomić na dockerze.
 
 <!-- [Nagranie]() -->
 
+<!-- TODO Napisać instrukcje uruchomienia w Dockerze -->
+
 ---
 
 ## Features
