@@ -12,8 +12,6 @@ Aplikację należy uruchomić na dockerze.
 
 ---
 
-# ktor-sample
-
 ## Features
 
 Here's a list of features included in this project:
