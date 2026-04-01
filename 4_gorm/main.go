@@ -11,11 +11,7 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.RequestLogger())
 
-	e.GET("/products/", products.SelectAll)
-	e.GET("/products/:id", products.SelectById)
-	e.PUT("/products/:id", products.UpdateById)
-	e.DELETE("/products/:id", products.DeleteById)
-	e.POST("/products/", products.Insert)
+	products.RegisterRoutes(e)
 
 	if err := e.Start(":20264"); err != nil {
 		e.Logger.Error("Could not start server", "error", err)

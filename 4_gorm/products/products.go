@@ -78,3 +78,11 @@ func Insert(c *echo.Context) error {
   newId := len(products) - 1
   return c.JSON(http.StatusOK, newId)
 }
+
+func RegisterRoutes(e *echo.Echo) {
+  e.GET("/products/", SelectAll)
+	e.GET("/products/:id", SelectById)
+	e.PUT("/products/:id", UpdateById)
+	e.DELETE("/products/:id", DeleteById)
+	e.POST("/products/", Insert)
+}
