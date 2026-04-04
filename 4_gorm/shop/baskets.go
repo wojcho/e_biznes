@@ -16,29 +16,29 @@ type basketMutationPayload struct {
 // Select all baskets
 func selectAllBaskets(c *echo.Context, db *gorm.DB) error {
 	var baskets []Basket
-	db.Preload("Contained").Find(&baskets)
+	db.Preload("Contained.Categories").Find(&baskets)
 	return c.JSON(http.StatusOK, baskets)
 }
 
 // Find basket by id
-func selectByIdBasket(c *echo.Context, db *gorm.DB) error {
+func selectByIdBaskets(c *echo.Context, db *gorm.DB) error {
 	id, err := parseID(c)
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	b, err := loadByID[Basket](db, id, "Contained")
+	b, err := loadByID[Basket](db, id, "Contained.Categories")
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
 	return c.JSON(http.StatusOK, b)
 }
 
-func updateByIdBasket(c *echo.Context, db *gorm.DB) error {
+func updateByIdBaskets(c *echo.Context, db *gorm.DB) error {
 	id, err := parseID(c)
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	b, err := loadByID[Basket](db, id, "Contained")
+	b, err := loadByID[Basket](db, id, "Contained.Categories")
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -69,12 +69,12 @@ func updateByIdBasket(c *echo.Context, db *gorm.DB) error {
 }
 
 // Delete a basket
-func deleteByIdBasket(c *echo.Context, db *gorm.DB) error {
+func deleteByIdBaskets(c *echo.Context, db *gorm.DB) error {
 	id, err := parseID(c)
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	b, err := loadByID[Basket](db, id, "Contained")
+	b, err := loadByID[Basket](db, id, "Contained.Categories")
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -91,7 +91,7 @@ func deleteByIdBasket(c *echo.Context, db *gorm.DB) error {
 
 // Insert a basket
 
-func insertBasket(c *echo.Context, db *gorm.DB) error {
+func insertBaskets(c *echo.Context, db *gorm.DB) error {
 	var payload basketMutationPayload
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, "Bind did not work")
@@ -124,8 +124,8 @@ func insertBasket(c *echo.Context, db *gorm.DB) error {
 
 func RegisterRoutesBaskets(e *echo.Echo, db *gorm.DB) {
 	e.GET("/baskets/", func(c *echo.Context) error { return selectAllBaskets(c, db) })
-	e.GET("/baskets/:id", func(c *echo.Context) error { return selectByIdBasket(c, db) })
-	e.PUT("/baskets/:id", func(c *echo.Context) error { return updateByIdBasket(c, db) })
-	e.DELETE("/baskets/:id", func(c *echo.Context) error { return deleteByIdBasket(c, db) })
-	e.POST("/baskets/", func(c *echo.Context) error { return insertBasket(c, db) })
+	e.GET("/baskets/:id", func(c *echo.Context) error { return selectByIdBaskets(c, db) })
+	e.PUT("/baskets/:id", func(c *echo.Context) error { return updateByIdBaskets(c, db) })
+	e.DELETE("/baskets/:id", func(c *echo.Context) error { return deleteByIdBaskets(c, db) })
+	e.POST("/baskets/", func(c *echo.Context) error { return insertBaskets(c, db) })
 }

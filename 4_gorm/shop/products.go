@@ -9,10 +9,16 @@ import (
 
 // CRUD
 
+type productPayload struct {
+	Name string `json:"name" form:"name"`
+	Price uint  `json:"price" form:"price"`
+	CategoryIDs []uint `json:"category_ids" form:"category_ids"`
+}
+
 // Select all products
 func selectAllProducts(c *echo.Context, db *gorm.DB) error {
 	var products []Product
-	db.Find(&products)
+	db.Preload("Categories").Find(&products)
 	return c.JSON(http.StatusOK, products)
 }
 
@@ -22,7 +28,7 @@ func selectByIdProducts(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	p, err := loadByID[Product](db, id)
+	p, err := loadByID[Product](db, id, "Categories")
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -31,20 +37,23 @@ func selectByIdProducts(c *echo.Context, db *gorm.DB) error {
 
 // Update products
 func updateByIdProducts(c *echo.Context, db *gorm.DB) error {
-	id, err := parseID(c)
-	if err != nil {
-		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
-	}
-	p, err := loadByID[Product](db, id)
-	if err != nil {
-		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
-	}
-
-	if err := c.Bind(p); err != nil {
+	id, _ := parseID(c)
+	p, _ := loadByID[Product](db, id, "Categories")
+	var payload productPayload
+	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, "Bind did not work")
 	}
+	p.Name = payload.Name
+	p.Price = payload.Price
 	if r := db.Save(p); r.Error != nil {
 		return c.JSON(http.StatusInternalServerError, "Database error")
+	}
+	if payload.CategoryIDs != nil {
+		var cats []Category
+		db.Find(&cats, payload.CategoryIDs)
+		if err := db.Model(p).Association("Categories").Replace(&cats); err != nil {
+			return c.JSON(http.StatusInternalServerError, "Association error")
+		}
 	}
 	return c.JSON(http.StatusOK, p.ID)
 }
@@ -55,7 +64,7 @@ func deleteByIdProducts(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	p, err := loadByID[Product](db, id)
+	p, err := loadByID[Product](db, id, "Categories")
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -68,12 +77,20 @@ func deleteByIdProducts(c *echo.Context, db *gorm.DB) error {
 
 // Insert a product
 func insertProducts(c *echo.Context, db *gorm.DB) error {
-	p := new(Product)
-	if err := c.Bind(p); err != nil {
+	var payload productPayload
+	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, "Bind did not work")
 	}
-	if r := db.Create(p); r.Error != nil {
+	p := Product{Name: payload.Name, Price: payload.Price}
+	if r := db.Create(&p); r.Error != nil {
 		return c.JSON(http.StatusInternalServerError, "Database error")
+	}
+	if len(payload.CategoryIDs) > 0 {
+		var cats []Category
+		db.Find(&cats, payload.CategoryIDs) // loads matching IDs
+		if err := db.Model(&p).Association("Categories").Replace(&cats); err != nil {
+			return c.JSON(http.StatusInternalServerError, "Association error")
+		}
 	}
 	return c.JSON(http.StatusOK, p.ID)
 }

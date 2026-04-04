@@ -15,14 +15,14 @@ func main() {
 	if err != nil {
 		panic("Could not connect to database")
 	}
-	db.AutoMigrate(&shop.Product{})
-	db.AutoMigrate(&shop.Basket{})
+	db.AutoMigrate(&shop.Product{}, &shop.Basket{}, &shop.Category{})
 
 	e := echo.New()
 	e.Use(middleware.RequestLogger())
 
 	shop.RegisterRoutesProducts(e, db)
 	shop.RegisterRoutesBaskets(e, db)
+	shop.RegisterRoutesCategories(e, db)
 
 	if err := e.Start(":20264"); err != nil {
 		e.Logger.Error("Could not start server", "error", err)
