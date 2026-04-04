@@ -10,4 +10,4 @@ Jako bazę danych można wybrać dowolną, sugerowałbym jednak pozostać przy s
 - :white_check_mark: 4.5 Należy stworzyć model kategorii i dodać relację między kategorią, a produktem [Commit](https://github.com/wojcho/e_biznes/commit/f98871f129a4996f54c8b06bf81422c8f4aae813)
 - :white_check_mark: 5.0 pogrupować zapytania w gorm'owe scope'y [Commit](https://github.com/wojcho/e_biznes/commit/f70fdc5f19a4c6c88afaab67d6060e98526cb07f)
 
-~~[Nagranie]()~~
+[Nagranie](https://github.com/wojcho/e_biznes/blob/main/4_gorm/video.mp4)
