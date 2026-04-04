@@ -16,7 +16,7 @@ type basketMutationPayload struct {
 // Select all baskets
 func selectAllBaskets(c *echo.Context, db *gorm.DB) error {
 	var baskets []Basket
-	db.Preload("Contained.Categories").Find(&baskets)
+	db.Scopes(WithContainedCategories()).Find(&baskets)
 	return c.JSON(http.StatusOK, baskets)
 }
 
@@ -26,7 +26,7 @@ func selectByIdBaskets(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	b, err := loadByID[Basket](db, id, "Contained.Categories")
+	b, err := loadByID[Basket](db, id, WithContainedCategories())
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -38,7 +38,7 @@ func updateByIdBaskets(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	b, err := loadByID[Basket](db, id, "Contained.Categories")
+	b, err := loadByID[Basket](db, id, WithContainedCategories())
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -74,7 +74,7 @@ func deleteByIdBaskets(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	b, err := loadByID[Basket](db, id, "Contained.Categories")
+	b, err := loadByID[Basket](db, id, WithContainedCategories())
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}

@@ -22,17 +22,32 @@ func parseID(c *echo.Context) (uint, error) {
 	return uint(id), nil
 }
 
-// Load data from any model by ID with optional preloads
-func loadByID[T any](db *gorm.DB, id uint, preloads ...string) (*T, error) {
-	var model T
-
-	query := db
-	for _, preload := range preloads {
-		query = query.Preload(preload)
+func ByID(id uint) func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("id = ?", id)
 	}
+}
 
-	if r := query.First(&model, "id = ?", id); r.Error != nil {
-		if errors.Is(r.Error, gorm.ErrRecordNotFound) {
+func WithCategories() func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Categories")
+	}
+}
+
+func WithContainedCategories() func(*gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Contained.Categories")
+	}
+}
+
+func loadByID[T any](db *gorm.DB, id uint, scopes ...func(*gorm.DB) *gorm.DB) (*T, error) {
+	var model T
+	query := db.Scopes(ByID(id))
+	if len(scopes) > 0 {
+		query = query.Scopes(scopes...)
+	}
+	if err := query.First(&model).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, echo.NewHTTPError(http.StatusNotFound, "Record with provided ID not found")
 		}
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Database error")

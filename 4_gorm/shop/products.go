@@ -18,7 +18,7 @@ type productPayload struct {
 // Select all products
 func selectAllProducts(c *echo.Context, db *gorm.DB) error {
 	var products []Product
-	db.Preload("Categories").Find(&products)
+	db.Scopes(WithCategories()).Find(&products)
 	return c.JSON(http.StatusOK, products)
 }
 
@@ -28,7 +28,7 @@ func selectByIdProducts(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	p, err := loadByID[Product](db, id, "Categories")
+	p, err := loadByID[Product](db, id, WithCategories())
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
@@ -38,7 +38,7 @@ func selectByIdProducts(c *echo.Context, db *gorm.DB) error {
 // Update products
 func updateByIdProducts(c *echo.Context, db *gorm.DB) error {
 	id, _ := parseID(c)
-	p, _ := loadByID[Product](db, id, "Categories")
+	p, _ := loadByID[Product](db, id, WithCategories())
 	var payload productPayload
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, "Bind did not work")
@@ -64,7 +64,7 @@ func deleteByIdProducts(c *echo.Context, db *gorm.DB) error {
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
-	p, err := loadByID[Product](db, id, "Categories")
+	p, err := loadByID[Product](db, id, WithCategories())
 	if err != nil {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
