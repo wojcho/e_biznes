@@ -1,4 +1,4 @@
-module example.com/shop
+module example.com/crud_shop
 
 go 1.25.8
 
