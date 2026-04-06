@@ -11,7 +11,7 @@ import dev.kord.core.Kord
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.common.entity.Snowflake
 
-fun Application.configureRouting() {
+fun Application.configureRouting(kord: Kord) {
     routing {
         post("/messages/") {
             val formContent = call.receiveParameters()
@@ -37,7 +37,6 @@ fun Application.configureRouting() {
                 return@post
             }
             val channelId = Snowflake(channelIdString)
-            val kord = Kord(token)
 
             try {
                 val priority = Priority.valueOf(params.get(2))

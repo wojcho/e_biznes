@@ -3,7 +3,7 @@
 Aplikację należy uruchomić na dockerze.
 
 - :white_check_mark: 3.0 Należy stworzyć aplikację kliencką w Kotlinie we frameworku Ktor, która pozwala na przesyłanie wiadomości na platformę Discord (Aplikacja przyjmuje wiadomości przez API z Ktor i przesyła na Discord) [Commit](https://github.com/wojcho/e_biznes/commit/5c7fe79b8ccf090d6bb3f28121481000ca999d72)
-- :x:<!-- :white_check_mark: --> 3.5 Aplikacja jest w stanie odbierać wiadomości użytkowników z platformy Discord skierowane do aplikacji (bota) <!-- [Commit]() -->
+- :white_check_mark: 3.5 Aplikacja jest w stanie odbierać wiadomości użytkowników z platformy Discord skierowane do aplikacji (bota) <!-- [Commit]() -->
 - :x:<!-- :white_check_mark: --> 4.0 Zwróci listę kategorii na określone żądanie użytkownika <!-- [Commit]() -->
 - :x:<!-- :white_check_mark: --> 4.5 Zwróci listę produktów wg żądanej kategorii <!-- [Commit]() -->
 - :x:<!-- :white_check_mark: --> 5.0 Aplikacja obsłuży dodatkowo jedną z platform: Slack lub Messenger <!-- [Commit]() -->

@@ -2,10 +2,42 @@ package com.example
 
 import io.ktor.server.application.*
 
+import dev.kord.core.Kord
+import dev.kord.core.event.message.MessageCreateEvent
+import dev.kord.core.on
+import dev.kord.core.entity.Message
+import dev.kord.gateway.PrivilegedIntent
+import dev.kord.gateway.Intent
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
 
-fun Application.module() {
-    configureRouting()
+suspend fun startKordResponder(kord: Kord) {
+    kord.on<MessageCreateEvent> {
+        if (message.author?.isBot != false) return@on
+        if (message.content == "!ping") {
+            message.channel.createMessage("pong!")
+        }
+    }
+
+    CoroutineScope(Dispatchers.Default).launch { // Without it there could be trouble with 10 seconds of cancellation, here it should run in background coroutine
+        kord.login {
+            @OptIn(PrivilegedIntent::class)
+            intents += Intent.MessageContent
+        }
+    }
+}
+
+suspend fun Application.module() {
+    val token = System.getenv("TOKEN") ?: run {
+        throw IllegalStateException();
+    }
+    val kord = Kord(token)
+    configureRouting(kord)
+    startKordResponder(kord)
 }
