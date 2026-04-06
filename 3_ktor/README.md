@@ -2,7 +2,7 @@
 
 Aplikację należy uruchomić na dockerze.
 
-- :x:<!-- :white_check_mark: --> 3.0 Należy stworzyć aplikację kliencką w Kotlinie we frameworku Ktor, która pozwala na przesyłanie wiadomości na platformę Discord <!-- [Commit]() -->
+- :white_check_mark: 3.0 Należy stworzyć aplikację kliencką w Kotlinie we frameworku Ktor, która pozwala na przesyłanie wiadomości na platformę Discord (Aplikacja przyjmuje wiadomości przez API z Ktor i przesyła na Discord) <!-- [Commit]() -->
 - :x:<!-- :white_check_mark: --> 3.5 Aplikacja jest w stanie odbierać wiadomości użytkowników z platformy Discord skierowane do aplikacji (bota) <!-- [Commit]() -->
 - :x:<!-- :white_check_mark: --> 4.0 Zwróci listę kategorii na określone żądanie użytkownika <!-- [Commit]() -->
 - :x:<!-- :white_check_mark: --> 4.5 Zwróci listę produktów wg żądanej kategorii <!-- [Commit]() -->
@@ -11,23 +11,16 @@ Aplikację należy uruchomić na dockerze.
 <!-- [Nagranie]() -->
 
 <!-- TODO Napisać instrukcje uruchomienia w Dockerze -->
+<!-- https://github.com/kordlib/kord/wiki/Getting-Started -->
 
 ---
-
-## Features
-
-Here's a list of features included in this project:
-
-| Name                                               | Description                                                 |
-| ----------------------------------------------------|------------------------------------------------------------- |
-| [Routing](https://start.ktor.io/p/routing-default) | Allows to define structured routes and associated handlers. |
 
 ## Building & Running
 
 To build or run the project, use one of the following tasks:
 
 | Task                                    | Description                                                          |
-| -----------------------------------------|---------------------------------------------------------------------- |
+| --------------------------------------- | -------------------------------------------------------------------- |
 | `./gradlew test`                        | Run the tests                                                        |
 | `./gradlew build`                       | Build everything                                                     |
 | `./gradlew buildFatJar`                 | Build an executable JAR of the server with all dependencies included |
@@ -36,7 +29,7 @@ To build or run the project, use one of the following tasks:
 | `./gradlew run`                         | Run the server                                                       |
 | `./gradlew runDocker`                   | Run using the local docker image                                     |
 
-If the server starts successfully, you'll see the following output:
+If the server starts successfully, similar output would be printed to below:
 
 ```
 2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
