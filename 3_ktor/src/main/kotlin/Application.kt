@@ -20,8 +20,8 @@ fun main(args: Array<String>) {
 suspend fun startKordResponder(kord: Kord) {
     kord.on<MessageCreateEvent> {
         if (message.author?.isBot != false) return@on
-        if (message.content == "!ping") {
-            message.channel.createMessage("pong!")
+        if (message.content == "categories") {
+            message.channel.createMessage(categories.contentToString())
         }
     }
 
