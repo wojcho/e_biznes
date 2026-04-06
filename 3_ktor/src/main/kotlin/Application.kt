@@ -22,6 +22,19 @@ suspend fun startKordResponder(kord: Kord) {
         if (message.author?.isBot != false) return@on
         if (message.content == "categories") {
             message.channel.createMessage(categories.contentToString())
+        } else if (message.content.startsWith("list")) {
+            val categoryName = message.content.removePrefix("list").trim()
+            if (categoryName.isEmpty()) {
+                message.channel.createMessage("Category name was not ptovided after `list`.")
+            } else {
+                val catId = categoryIdOfName(categories, categoryName)
+                if (catId == null) {
+                    message.channel.createMessage("Category not found: \"$categoryName\"")
+                } else {
+                    val productsInCategory = productsOfCategory(products, catId)
+                    message.channel.createMessage(productsInCategory.toString())
+                }
+            }
         }
     }
 
