@@ -1,3 +1,5 @@
+import org.gradle.api.JavaVersion
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
@@ -34,4 +36,19 @@ dependencies {
     implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:${wsVersion}")
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+}
+
+ktor {
+    docker {
+        jreVersion.set(JavaVersion.VERSION_25)
+        localImageName.set("ktor-sample")
+        imageTag.set("latest")
+
+        environmentVariable("DISCORD_TOKEN", "")
+        environmentVariable("DISCORD_CHANNEL_ID", "")
+        environmentVariable("SLACK_BOT_TOKEN", "")
+        environmentVariable("SLACK_SIGNING_SECRET", "")
+        environmentVariable("SLACK_APP_TOKEN", "")
+        environmentVariable("SLACK_CHANNEL_ID", "")
+    }
 }
