@@ -11,7 +11,11 @@ import dev.kord.core.Kord
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.common.entity.Snowflake
 
-fun Application.configureRouting(kord: Kord) {
+import com.slack.api.methods.MethodsClient
+import com.slack.api.methods.request.chat.ChatPostMessageRequest
+import com.slack.api.methods.response.chat.ChatPostMessageResponse
+
+fun Application.configureRouting(kord: Kord, slackClient: MethodsClient) {
     routing {
         post("/messages/") {
             val formContent = call.receiveParameters()
@@ -28,11 +32,7 @@ fun Application.configureRouting(kord: Kord) {
                 return@post
             }
 
-            val token = System.getenv("TOKEN") ?: run {
-                call.respond(HttpStatusCode.InternalServerError)
-                return@post
-            }
-            val channelIdString = System.getenv("CHANNEL_ID") ?: run {
+            val channelIdString = System.getenv("DISCORD_CHANNEL_ID") ?: run {
                 call.respond(HttpStatusCode.InternalServerError)
                 return@post
             }
@@ -49,6 +49,15 @@ fun Application.configureRouting(kord: Kord) {
 
                 val channel = kord.getChannel(channelId) as? TextChannel ?: run {
                     call.respond(HttpStatusCode.BadRequest, "Channel not found or not a text channel")
+                    return@post
+                }
+
+                val slackResp = slackClient.chatPostMessage { req ->
+                req.channel(System.getenv("SLACK_CHANNEL_ID"))
+                    .text(message.toString())
+                }
+                if (!slackResp.isOk) {
+                    call.respond(HttpStatusCode.InternalServerError, slackResp.error)
                     return@post
                 }
 
