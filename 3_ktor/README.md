@@ -8,10 +8,11 @@ Aplikację należy uruchomić na dockerze.
 - :white_check_mark: 4.5 Zwróci listę produktów wg żądanej kategorii [Commit](https://github.com/wojcho/e_biznes/commit/c3e23566d3a2f2ab24ab267a2b56e0618d1ae903)
 - :white_check_mark: 5.0 Aplikacja obsłuży dodatkowo jedną z platform: Slack lub Messenger [Commit](https://github.com/wojcho/e_biznes/commit/a58746abf8dfeb74059d464e56c39cc6426e0c56)
 
-<!-- [Nagranie]() -->
+[Nagranie](https://github.com/wojcho/e_biznes/blob/main/3_ktor/video.mp4)
 
-<!-- TODO Napisać instrukcje uruchomienia w Dockerze -->
-<!-- https://github.com/kordlib/kord/wiki/Getting-Started -->
+Aby uruchomić aplikację w kontenerze, możliwe jest korzystanie z komendy `./gradlew runDocker`
+Jednak aby aplikacja działała prawidłowo, konieczne jest uzupełnienie sekretów, które zostały usunięte z repozytorium, ponieważ repozytorium jest publiczne
+Sposób działania aplikacji zaprezentowany został w nagraniu do którego link znajduje się powyżej
 
 ---
 
