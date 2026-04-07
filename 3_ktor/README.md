@@ -6,7 +6,7 @@ Aplikację należy uruchomić na dockerze.
 - :white_check_mark: 3.5 Aplikacja jest w stanie odbierać wiadomości użytkowników z platformy Discord skierowane do aplikacji (bota) [Commit](https://github.com/wojcho/e_biznes/commit/52808df8a30897e80a9733322f6c593d6f3ae5e6)
 - :white_check_mark: 4.0 Zwróci listę kategorii na określone żądanie użytkownika [Commit](https://github.com/wojcho/e_biznes/commit/1b629b008242938c3f36f3a957ba2606e4df2e5c)
 - :white_check_mark: 4.5 Zwróci listę produktów wg żądanej kategorii [Commit](https://github.com/wojcho/e_biznes/commit/c3e23566d3a2f2ab24ab267a2b56e0618d1ae903)
-- :white_check_mark: 5.0 Aplikacja obsłuży dodatkowo jedną z platform: Slack lub Messenger <!-- [Commit]() -->
+- :white_check_mark: 5.0 Aplikacja obsłuży dodatkowo jedną z platform: Slack lub Messenger [Commit](https://github.com/wojcho/e_biznes/commit/a58746abf8dfeb74059d464e56c39cc6426e0c56)
 
 <!-- [Nagranie]() -->
 
