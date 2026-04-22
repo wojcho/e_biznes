@@ -12,4 +12,4 @@ Dane pomiędzy wszystkimi komponentami powinny być przesyłane za pomocą React
 - :white_check_mark: 4.5 Należy dodać skrypt uruchamiający aplikację serwerową oraz kliencką na dockerze via docker-compose [Commit](https://github.com/wojcho/e_biznes/commit/21ed6f15a22513a78a5a9994cf99a417e4a8dd44)
 - :white_check_mark: 5.0 Należy wykorzystać axios oraz dodać nagłówki pod CORS [Commit](https://github.com/wojcho/e_biznes/commit/8a815623fd4f56affd087c80308a8ae82206b176)
 
-<!-- [Nagranie]() -->
+[Nagranie](https://github.com/wojcho/e_biznes/blob/main/5_react/video.mp4)
