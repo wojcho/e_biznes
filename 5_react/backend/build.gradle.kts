@@ -26,3 +26,10 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
 }
+
+jib {
+    to {
+        image = "localhost/shop-backend"
+        tags = setOf("latest")
+    }
+}

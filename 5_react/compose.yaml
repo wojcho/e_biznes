@@ -1,0 +1,10 @@
+services:
+  frontend:
+    image: localhost/shop-frontend:latest
+    ports:
+      - "${FRONTEND_PORT}:3000"
+
+  backend:
+    image: localhost/shop-backend:latest
+    ports:
+      - "${BACKEND_PORT}:8080"
