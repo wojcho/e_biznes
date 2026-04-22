@@ -1,3 +1,5 @@
+import axios, { type AxiosInstance, type AxiosResponse } from "axios";
+
 export type Product = {
   id: number;
   name: string;
@@ -65,10 +67,15 @@ export class ApiError extends Error {
 export class ApiClient {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
+  private client: AxiosInstance;
 
   constructor(options?: FetchOptions) {
     this.baseUrl = options?.baseUrl?.replace(/\/+$/, "") ?? "";
     this.defaultHeaders = options?.defaultHeaders ?? { "Content-Type": "application/json" };
+    this.client = axios.create({
+      baseURL: this.baseUrl,
+      headers: this.defaultHeaders,
+    });
   }
 
   private async request<T>(
@@ -77,17 +84,33 @@ export class ApiClient {
     body?: any,
     headers?: Record<string, string>
   ): Promise<T> {
-    const url = `${this.baseUrl}${path}`;
-    const res = await fetch(url, {
-      method,
-      headers: { ...this.defaultHeaders, ...(headers ?? {}) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-    const text = await res.text();
-    const contentType = res.headers.get("content-type") ?? "";
-    const parsed = contentType.includes("application/json") && text ? JSON.parse(text) : text;
-    if (!res.ok) throw new ApiError(res.statusText || `HTTP ${res.status}`, res.status, parsed);
-    return parsed as T;
+    try {
+      const resp: AxiosResponse<T> = await this.client.request<T>({
+        url: path,
+        method,
+        data: body === undefined ? undefined : body,
+        headers: { ...(headers ?? {}) },
+        validateStatus: () => true, // handle errors manually to create ApiError with body
+      });
+
+      // axios will parse JSON automatically; resp.data may be string or object depending on server
+      if (resp.status >= 200 && resp.status < 300) {
+        return resp.data as T;
+      } else {
+        // include parsed body if available
+        throw new ApiError(resp.statusText || `HTTP ${resp.status}`, resp.status, resp.data);
+      }
+    } catch (err: any) {
+      // If axios throws (network error, timeout), normalize to ApiError
+      if (err instanceof ApiError) throw err;
+      if (err.isAxiosError) {
+        const status = err.response?.status ?? 0;
+        const body = err.response?.data;
+        const msg = err.message || `Network error`;
+        throw new ApiError(msg, status, body);
+      }
+      throw err;
+    }
   }
 
   // Products
