@@ -1,28 +1,24 @@
 import { useState } from "react";
-import { ApiClient, type PaymentResponse, ApiError } from "./apiClient";
+import { useShop } from "./ShopContext";
+import type { PaymentResponse } from "./apiClient";
 
-export default function Payments({ api, userId }: { api: ApiClient; userId: number }) {
+export default function Payments() {
+  const { checkout, selectedUserId } = useShop();
   const [checkoutResult, setCheckoutResult] = useState<PaymentResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const runCheckout = async (userId: number, paymentMethod?: string) => {
+  const runCheckout = async (paymentMethod = "card") => {
+    if (!selectedUserId) return;
     setError(null);
-    setCheckoutResult(null);
-    try {
-      const res = await api.checkoutBasket(userId, { userId, paymentMethod });
-      setCheckoutResult(res);
-    } catch (err: unknown) {
-      if (err instanceof ApiError) setError(`${err.message} (status ${err.status})`);
-      else setError(String(err));
-    }
+    const result = await checkout(paymentMethod);
+    if (result) setCheckoutResult(result);
   };
 
   return (
     <div>
-      <button onClick={() => runCheckout(userId, "card")}>Checkout</button>
+      <button onClick={() => runCheckout("card")}>Checkout with Card</button>
 
       {error && <div>Error: {error}</div>}
-
       {checkoutResult && (
         <div>
           <strong>{checkoutResult.success ? "Success" : "Failed"}:</strong> {checkoutResult.message}

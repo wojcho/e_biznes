@@ -1,34 +1,8 @@
-import { useEffect, useState } from "react";
-import { ApiClient, type Product, ApiError } from "./apiClient";
+import { useShop } from "./ShopContext";
 import ItemTable from "./ItemTable";
 
-export default function Products({ api }: { api: ApiClient }) {
-  const [products, setProducts] = useState<Product[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    setError(null);
-    api
-      .listProducts()
-      .then((ps) => {
-        if (!mounted) return;
-        setProducts(ps);
-      })
-      .catch((err: unknown) => {
-        if (!mounted) return;
-        if (err instanceof ApiError) setError(`${err.message} (status ${err.status})`);
-        else setError(String(err));
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [api]);
+export default function Products() {
+  const { products, loading, error, loadProducts } = useShop();
 
   if (loading) return <div>Loading products...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -42,5 +16,8 @@ export default function Products({ api }: { api: ApiClient }) {
     inStockOrQuantity: p.inStock,
   }));
 
-  return <ItemTable rows={rows} isForBasket />;
+  return (<div>
+    <ItemTable rows={rows} />
+    <button onClick={loadProducts}>Refresh products</button>
+  </div>);
 }

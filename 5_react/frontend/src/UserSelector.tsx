@@ -1,53 +1,24 @@
-import { useEffect, useState } from "react";
-import { ApiClient, type User, ApiError } from "./apiClient";
+import { useNavigate } from "react-router";
+import { useShop } from "./ShopContext";
 
-export default function UserSelector({
-  api,
-  value,
-  onChange,
-}: {
-  api: ApiClient;
-  value: number | null;
-  onChange: (id: number | null) => void;
-}) {
-  const [users, setUsers] = useState<User[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function UserSelector() {
+  const navigate = useNavigate();
+  const { users, selectedUserId, setSelectedUserId, loading, error } = useShop();
 
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    api
-      .listUsers()
-      .then((u) => {
-        if (!mounted) return;
-        setUsers(u);
-      })
-      .catch((err: unknown) => {
-        if (!mounted) return;
-        if (err instanceof ApiError) setError(`${err.message} (status ${err.status})`);
-        else setError(String(err));
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [api, onChange]);
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value ? Number(e.target.value) : null;
+    setSelectedUserId(id);
+    if (id !== null) navigate(`/users/${id}`);
+    else navigate("/users");
+  };
 
   return (
     <div>
       <label>
-        <div>
-          User:
-        </div>
-        <select
-          value={value ?? ""}
-          onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
-        >
+        User:
+        <select value={selectedUserId ?? ""} onChange={handleChange}>
           <option value="">Select User</option>
-          {users?.map((u) => (
+          {users.map((u) => (
             <option key={u.id} value={u.id}>
               {u.name} ({u.email})
             </option>
