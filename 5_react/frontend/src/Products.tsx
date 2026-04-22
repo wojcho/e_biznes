@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ApiClient, type Product, ApiError } from "./apiClient";
+import ItemTable from "./ItemTable";
 
 export default function Products({ api }: { api: ApiClient }) {
   const [products, setProducts] = useState<Product[] | null>(null);
@@ -33,28 +34,13 @@ export default function Products({ api }: { api: ApiClient }) {
   if (error) return <div>Error: {error}</div>;
   if (!products || products.length === 0) return <div>No products found.</div>;
 
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Price</th>
-          <th>In stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        {products.map((p) => (
-          <tr key={p.id}>
-            <td>{p.id}</td>
-            <td>{p.name}</td>
-            <td>{p.description ?? "-"}</td>
-            <td>${(p.priceCents / 100).toFixed(2)}</td>
-            <td>{p.inStock}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+  const rows = products.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description ?? "-",
+    priceCents: p.priceCents,
+    inStockOrQuantity: p.inStock,
+  }));
+
+  return <ItemTable rows={rows} isForBasket />;
 }
