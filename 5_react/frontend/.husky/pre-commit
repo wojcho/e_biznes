@@ -1,0 +1,2 @@
+cd ./5_react/frontend/
+npx lint-staged
