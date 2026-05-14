@@ -1,0 +1,31 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  codeql-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # https://github.com/github/codeql-action#workflow-permissions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript-typescript
+
+      - name: Install dependencies
+        working-directory: ./5_react/frontend
+        run: npm ci
+
+      - name: Check using CodeQL
+        uses: github/codeql-action/analyze@v2
+        with:
+          pack-repo-path: .
+          paths: ./5_react/frontend
