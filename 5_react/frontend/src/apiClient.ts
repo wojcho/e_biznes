@@ -56,8 +56,8 @@ type FetchOptions = {
 
 export class ApiError extends Error {
   status: number;
-  body?: any;
-  constructor(message: string, status: number, body?: any) {
+  body?: unknown;
+  constructor(message: string, status: number, body?: unknown) {
     super(message);
     this.status = status;
     this.body = body;
@@ -71,7 +71,9 @@ export class ApiClient {
 
   constructor(options?: FetchOptions) {
     this.baseUrl = options?.baseUrl?.replace(/\/+$/, "") ?? "";
-    this.defaultHeaders = options?.defaultHeaders ?? { "Content-Type": "application/json" };
+    this.defaultHeaders = options?.defaultHeaders ?? {
+      "Content-Type": "application/json",
+    };
     this.client = axios.create({
       baseURL: this.baseUrl,
       headers: this.defaultHeaders,
@@ -81,8 +83,8 @@ export class ApiClient {
   private async request<T>(
     path: string,
     method: string = "GET",
-    body?: any,
-    headers?: Record<string, string>
+    body?: unknown,
+    headers?: Record<string, string>,
   ): Promise<T> {
     try {
       const resp: AxiosResponse<T> = await this.client.request<T>({
@@ -98,12 +100,16 @@ export class ApiClient {
         return resp.data as T;
       } else {
         // include parsed body if available
-        throw new ApiError(resp.statusText || `HTTP ${resp.status}`, resp.status, resp.data);
+        throw new ApiError(
+          resp.statusText || `HTTP ${resp.status}`,
+          resp.status,
+          resp.data,
+        );
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // If axios throws (network error, timeout), normalize to ApiError
       if (err instanceof ApiError) throw err;
-      if (err.isAxiosError) {
+      if (axios.isAxiosError(err)) {
         const status = err.response?.status ?? 0;
         const body = err.response?.data;
         const msg = err.message || `Network error`;
@@ -160,11 +166,25 @@ export class ApiClient {
     return this.request<BasketItem[]>(`/users/${userId}/basket`, "POST", item);
   }
 
-  removeFromBasket(userId: number, item: BasketItem): Promise<BasketItem | void> {
-    return this.request<BasketItem | void>(`/users/${userId}/basket`, "DELETE", item);
+  removeFromBasket(
+    userId: number,
+    item: BasketItem,
+  ): Promise<BasketItem | void> {
+    return this.request<BasketItem | void>(
+      `/users/${userId}/basket`,
+      "DELETE",
+      item,
+    );
   }
 
-  checkoutBasket(userId: number, req: PaymentRequest): Promise<PaymentResponse> {
-    return this.request<PaymentResponse>(`/users/${userId}/basket/checkout`, "POST", req);
+  checkoutBasket(
+    userId: number,
+    req: PaymentRequest,
+  ): Promise<PaymentResponse> {
+    return this.request<PaymentResponse>(
+      `/users/${userId}/basket/checkout`,
+      "POST",
+      req,
+    );
   }
 }
