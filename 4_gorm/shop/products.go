@@ -41,18 +41,18 @@ func updateByIdProducts(c *echo.Context, db *gorm.DB) error {
 	p, _ := loadByID[Product](db, id, WithCategories())
 	var payload productPayload
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bind did not work")
+		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
 	}
 	p.Name = payload.Name
 	p.Price = payload.Price
 	if r := db.Save(p); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	if payload.CategoryIDs != nil {
 		var cats []Category
 		db.Find(&cats, payload.CategoryIDs)
 		if err := db.Model(p).Association("Categories").Replace(&cats); err != nil {
-			return c.JSON(http.StatusInternalServerError, "Association error")
+			return c.JSON(http.StatusInternalServerError, associationErrorStatusString)
 		}
 	}
 	return c.JSON(http.StatusOK, p.ID)
@@ -70,7 +70,7 @@ func deleteByIdProducts(c *echo.Context, db *gorm.DB) error {
 	}
 
 	if r := db.Delete(p); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, p.ID)
 }
@@ -79,17 +79,17 @@ func deleteByIdProducts(c *echo.Context, db *gorm.DB) error {
 func insertProducts(c *echo.Context, db *gorm.DB) error {
 	var payload productPayload
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bind did not work")
+		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
 	}
 	p := Product{Name: payload.Name, Price: payload.Price}
 	if r := db.Create(&p); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	if len(payload.CategoryIDs) > 0 {
 		var cats []Category
 		db.Find(&cats, payload.CategoryIDs) // loads matching IDs
 		if err := db.Model(&p).Association("Categories").Replace(&cats); err != nil {
-			return c.JSON(http.StatusInternalServerError, "Association error")
+			return c.JSON(http.StatusInternalServerError, associationErrorStatusString)
 		}
 	}
 	return c.JSON(http.StatusOK, p.ID)
@@ -98,9 +98,10 @@ func insertProducts(c *echo.Context, db *gorm.DB) error {
 // Registering
 
 func RegisterRoutesProducts(e *echo.Echo, db *gorm.DB) {
+	const productsIdPathString = "/products/:id"
 	e.GET("/products/", func(c *echo.Context) error { return selectAllProducts(c, db) })
-	e.GET("/products/:id", func(c *echo.Context) error { return selectByIdProducts(c, db) })
-	e.PUT("/products/:id", func(c *echo.Context) error { return updateByIdProducts(c, db) })
-	e.DELETE("/products/:id", func(c *echo.Context) error { return deleteByIdProducts(c, db) })
+	e.GET(productsIdPathString, func(c *echo.Context) error { return selectByIdProducts(c, db) })
+	e.PUT(productsIdPathString, func(c *echo.Context) error { return updateByIdProducts(c, db) })
+	e.DELETE(productsIdPathString, func(c *echo.Context) error { return deleteByIdProducts(c, db) })
 	e.POST("/products/", func(c *echo.Context) error { return insertProducts(c, db) })
 }

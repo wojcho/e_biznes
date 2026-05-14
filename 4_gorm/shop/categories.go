@@ -28,10 +28,10 @@ func selectByIdCategory(c *echo.Context, db *gorm.DB) error {
 func insertCategory(c *echo.Context, db *gorm.DB) error {
 	cat := new(Category)
 	if err := c.Bind(cat); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bind did not work")
+		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
 	}
 	if r := db.Create(cat); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, cat.ID)
 }
@@ -46,10 +46,10 @@ func updateCategory(c *echo.Context, db *gorm.DB) error {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
 	if err := c.Bind(cat); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bind did not work")
+		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
 	}
 	if r := db.Save(cat); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, cat.ID)
 }
@@ -64,15 +64,16 @@ func deleteCategory(c *echo.Context, db *gorm.DB) error {
 		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
 	}
 	if r := db.Delete(cat); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, cat.ID)
 }
 
 func RegisterRoutesCategories(e *echo.Echo, db *gorm.DB) {
+	const categoriesIdPathString = "/categories/:id"
 	e.GET("/categories/", func(c *echo.Context) error { return selectAllCategories(c, db) })
-	e.GET("/categories/:id", func(c *echo.Context) error { return selectByIdCategory(c, db) })
+	e.GET(categoriesIdPathString, func(c *echo.Context) error { return selectByIdCategory(c, db) })
 	e.POST("/categories/", func(c *echo.Context) error { return insertCategory(c, db) })
-	e.PUT("/categories/:id", func(c *echo.Context) error { return updateCategory(c, db) })
-	e.DELETE("/categories/:id", func(c *echo.Context) error { return deleteCategory(c, db) })
+	e.PUT(categoriesIdPathString, func(c *echo.Context) error { return updateCategory(c, db) })
+	e.DELETE(categoriesIdPathString, func(c *echo.Context) error { return deleteCategory(c, db) })
 }

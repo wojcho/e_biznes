@@ -37,3 +37,6 @@ out/
 
 ### Test script which has API secret token ###
 test.sh
+
+### Sonar ###
+/.scannerwork/

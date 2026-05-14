@@ -3,7 +3,6 @@ package com.example
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receiveParameters
 
@@ -12,8 +11,6 @@ import dev.kord.core.entity.channel.TextChannel
 import dev.kord.common.entity.Snowflake
 
 import com.slack.api.methods.MethodsClient
-import com.slack.api.methods.request.chat.ChatPostMessageRequest
-import com.slack.api.methods.response.chat.ChatPostMessageResponse
 
 fun Application.configureRouting(kord: Kord, slackClient: MethodsClient) {
     routing {

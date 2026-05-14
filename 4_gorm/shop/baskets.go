@@ -45,7 +45,7 @@ func updateByIdBaskets(c *echo.Context, db *gorm.DB) error {
 
 	var payload basketMutationPayload
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bind did not work")
+		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
 	}
 
 	// If item IDs provided, load those products and replace association
@@ -53,17 +53,17 @@ func updateByIdBaskets(c *echo.Context, db *gorm.DB) error {
 		var items []Product
 		if len(payload.ItemIDs) > 0 {
 			if r := db.Find(&items, payload.ItemIDs); r.Error != nil {
-				return c.JSON(http.StatusInternalServerError, "Database error")
+				return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 			}
 		}
 		// Replace association
 		if r := db.Model(b).Association("Contained").Replace(&items); r != nil {
-			return c.JSON(http.StatusInternalServerError, "Database error")
+			return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 		}
 	}
 
 	if r := db.Save(b); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, b.ID)
 }
@@ -81,10 +81,10 @@ func deleteByIdBaskets(c *echo.Context, db *gorm.DB) error {
 
 	// Clear associations first
 	if r := db.Model(b).Association("Contained").Clear(); r != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	if r := db.Delete(b); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, b.ID)
 }
@@ -94,28 +94,28 @@ func deleteByIdBaskets(c *echo.Context, db *gorm.DB) error {
 func insertBaskets(c *echo.Context, db *gorm.DB) error {
 	var payload basketMutationPayload
 	if err := c.Bind(&payload); err != nil {
-		return c.JSON(http.StatusBadRequest, "Bind did not work")
+		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
 	}
 
 	b := &Basket{}
 	if r := db.Create(b); r.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 
 	if payload.ItemIDs != nil && len(payload.ItemIDs) > 0 {
 		var items []Product
 		if r := db.Find(&items, payload.ItemIDs); r.Error != nil {
-			return c.JSON(http.StatusInternalServerError, "Database error")
+			return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 		}
 		// Alternatively Append could be used, but just in case there was some old data, which there should not be, Replace is used
 		if r := db.Model(b).Association("Contained").Replace(&items); r != nil { // https://gorm.io/docs/associations.html#Association-Mode
-			return c.JSON(http.StatusInternalServerError, "Database error")
+			return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 		}
 	}
 
 	bLoaded, err := loadByID[Basket](db, b.ID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Database error")
+		return c.JSON(http.StatusInternalServerError, dbErrorStatusString)
 	}
 	return c.JSON(http.StatusOK, bLoaded.ID)
 }
@@ -123,9 +123,10 @@ func insertBaskets(c *echo.Context, db *gorm.DB) error {
 // Registering
 
 func RegisterRoutesBaskets(e *echo.Echo, db *gorm.DB) {
+	const basketsIdPathString = "/baskets/:id"
 	e.GET("/baskets/", func(c *echo.Context) error { return selectAllBaskets(c, db) })
-	e.GET("/baskets/:id", func(c *echo.Context) error { return selectByIdBaskets(c, db) })
-	e.PUT("/baskets/:id", func(c *echo.Context) error { return updateByIdBaskets(c, db) })
-	e.DELETE("/baskets/:id", func(c *echo.Context) error { return deleteByIdBaskets(c, db) })
+	e.GET(basketsIdPathString, func(c *echo.Context) error { return selectByIdBaskets(c, db) })
+	e.PUT(basketsIdPathString, func(c *echo.Context) error { return updateByIdBaskets(c, db) })
+	e.DELETE(basketsIdPathString, func(c *echo.Context) error { return deleteByIdBaskets(c, db) })
 	e.POST("/baskets/", func(c *echo.Context) error { return insertBaskets(c, db) })
 }

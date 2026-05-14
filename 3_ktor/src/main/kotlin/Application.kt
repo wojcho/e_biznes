@@ -8,7 +8,6 @@ import kotlinx.coroutines.*
 import dev.kord.core.Kord
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.on
-import dev.kord.core.entity.Message
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.gateway.Intent
 
@@ -16,9 +15,6 @@ import com.slack.api.bolt.App
 import com.slack.api.model.event.MessageEvent
 import com.slack.api.bolt.socket_mode.SocketModeApp
 import com.slack.api.Slack
-import com.slack.api.webhook.WebhookResponse
-import com.slack.api.methods.SlackApiException
-import com.slack.api.methods.MethodsClient
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
