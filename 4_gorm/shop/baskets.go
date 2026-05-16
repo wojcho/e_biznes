@@ -9,10 +9,6 @@ import (
 
 // CRUD
 
-type basketMutationPayload struct {
-	ItemIDs []uint `json:"itemIds"`
-}
-
 // Select all baskets
 func selectAllBaskets(c *echo.Context, db *gorm.DB) error {
 	var baskets []Basket

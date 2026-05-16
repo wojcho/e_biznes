@@ -43,8 +43,14 @@ func WithContainedCategories() func(*gorm.DB) *gorm.DB {
 func loadByID[T any](db *gorm.DB, id uint, scopes ...func(*gorm.DB) *gorm.DB) (*T, error) {
 	var model T
 	query := db.Scopes(ByID(id))
-	if len(scopes) > 0 {
-		query = query.Scopes(scopes...)
+	var validScopes []func(*gorm.DB) *gorm.DB
+	for _, s := range scopes {
+		if s != nil {
+			validScopes = append(validScopes, s)
+		}
+	}
+	if len(validScopes) > 0 {
+		query = query.Scopes(validScopes...)
 	}
 	if err := query.First(&model).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

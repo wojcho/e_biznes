@@ -9,12 +9,6 @@ import (
 
 // CRUD
 
-type productPayload struct {
-	Name string `json:"name" form:"name"`
-	Price uint  `json:"price" form:"price"`
-	CategoryIDs []uint `json:"category_ids" form:"category_ids"`
-}
-
 // Select all products
 func selectAllProducts(c *echo.Context, db *gorm.DB) error {
 	var products []Product
