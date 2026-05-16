@@ -31,8 +31,14 @@ func selectByIdProducts(c *echo.Context, db *gorm.DB) error {
 
 // Update products
 func updateByIdProducts(c *echo.Context, db *gorm.DB) error {
-	id, _ := parseID(c)
-	p, _ := loadByID[Product](db, id, WithCategories())
+	id, err := parseID(c)
+	if err != nil {
+		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
+	}
+	p, err := loadByID[Product](db, id, WithCategories())
+	if err != nil {
+		return c.JSON(err.(*echo.HTTPError).Code, err.Error())
+	}
 	var payload productPayload
 	if err := c.Bind(&payload); err != nil {
 		return c.JSON(http.StatusBadRequest, bindErrorStatusString)
