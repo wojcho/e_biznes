@@ -17,4 +17,4 @@ Klucz należy uzyskać na:
 - :x: <!-- :white_check_mark: --> 4.5 logowanie via Facebook lub Github OAuth2 ~~[Commit]()~~
 - :x: <!-- :white_check_mark: --> 5.0 zapisywanie danych logowania OAuth2 po stronie serwera ~~[Commit]()~~
 
-~~[Nagranie]()~~
+[Nagranie](https://github.com/wojcho/e_biznes/blob/main/8_oauth/video_3_5.mp4)
