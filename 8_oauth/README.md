@@ -11,7 +11,7 @@ Klucz należy uzyskać na:
 - https://console.cloud.google.com/apis/dashboard,
 - https://developers.facebook.com/
 
-- :x: <!-- :white_check_mark: --> 3.0 logowanie przez aplikację serwerową (bez Oauth2) ~~[Commit]()~~
+- :white_check_mark: 3.0 logowanie przez aplikację serwerową (bez Oauth2) [Commit](https://github.com/wojcho/e_biznes/commit/d22dda90acab62de240b7016e75fc10413e84e3e)
 - :x: <!-- :white_check_mark: --> 3.5 rejestracja przez aplikację serwerową (bez Oauth2) ~~[Commit]()~~
 - :x: <!-- :white_check_mark: --> 4.0 logowanie via Google OAuth2 ~~[Commit]()~~
 - :x: <!-- :white_check_mark: --> 4.5 logowanie via Facebook lub Github OAuth2 ~~[Commit]()~~
