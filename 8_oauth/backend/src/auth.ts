@@ -6,6 +6,11 @@ export interface AuthPayload {
   username: string;
 }
 
+export interface LoginRegisterPayload {
+  username?: string;
+  password?: string;
+}
+
 export const signToken = (payload: object) => {
   return jwt.sign(payload, SECRET, { algorithm: "HS256", expiresIn: TOKEN_EXPIRES_IN });
 }

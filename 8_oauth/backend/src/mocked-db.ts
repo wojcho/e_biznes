@@ -15,3 +15,10 @@ export const isValidUser = (username: string, password: string): boolean => {
   }
   return false;
 }
+
+export const createUser = (username: string, password: string): number => {
+  const largestId = users.map(user => user.id).sort((a, b) => b - a)[0]; // sort is inefficient, but it is mocked small amount of data
+  const newId = (largestId ?? 0) + 1;
+  users.push({id: newId, username, password});
+  return newId;
+}

@@ -7,8 +7,10 @@ type Status = {
 };
 
 export const App = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [registerUsername, setRegisterUsername] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [id, setId] = useState<number>(1);
   const [status, setStatus] = useState<Status>({ message: "Not requested" });
@@ -24,7 +26,7 @@ export const App = () => {
       const res = await fetch(`${serviceBase}${apiPublicRoute}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: loginUsername, password: loginPassword }),
         credentials: "include", // send cookie
       });
       const body = await res.json();
@@ -38,6 +40,27 @@ export const App = () => {
     } catch (err) {
       setStatus({ message: "Network error" });
       setLoggedIn(false);
+    }
+  }
+
+  const handleRegister: React.SubmitEventHandler<HTMLFormElement> = async(e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus({ message: "Registering..." });
+    try {
+      const res = await fetch(`${serviceBase}${apiPublicRoute}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: registerUsername, password: registerPassword }),
+        credentials: "include", // send cookie
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setStatus({ code: res.status, message: body?.message ?? "Register failed" });
+        return;
+      }
+      setStatus({ code: res.status, message: body?.message ?? "Registered" });
+    } catch (err) {
+      setStatus({ message: "Network error" });
     }
   }
 
@@ -62,14 +85,14 @@ export const App = () => {
   return (
     <main>
       <section>
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
+        <h2>Register</h2>
+        <form onSubmit={handleRegister}>
           <div>
             <label>
               Username{" "}
               <input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={registerUsername}
+                onChange={(e) => setRegisterUsername(e.target.value)}
                 required
               />
             </label>
@@ -79,17 +102,46 @@ export const App = () => {
               Password{" "}
               <input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={registerPassword}
+                onChange={(e) => setRegisterPassword(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+          <button type="submit">Register</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Login</h2>
+        <form onSubmit={handleLogin}>
+          <div>
+            <label>
+              Username{" "}
+              <input
+                value={loginUsername}
+                onChange={(e) => setLoginUsername(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Password{" "}
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
                 required
               />
             </label>
           </div>
           <button type="submit">Login</button>
         </form>
-        <div>
-          <strong>Status:</strong> {status.message} {status.code ? `(${status.code})` : ""}
-        </div>
+      </section>
+
+      <section>
+        <strong>Status:</strong> {status.message} {status.code ? `(${status.code})` : ""}
       </section>
 
       {loggedIn && (
