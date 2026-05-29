@@ -6,7 +6,7 @@ Cały projekt należy stworzyć w Pythonie.
 
 Można wykorzystać lokalny model przez Ollama (https://ollama.com/).
 
-- :white_check_mark: 3.0 należy stworzyć po stronie serwerowej osobny serwis do łącznia z ChatGPT ~~[Commit]()~~
+- :white_check_mark: 3.0 należy stworzyć po stronie serwerowej osobny serwis do łącznia z ChatGPT [Commit](https://github.com/wojcho/e_biznes/commit/aaf744664d1b310bc4e93a2d724fd65b4117e155)
 - :x: <!-- :white_check_mark: --> 3.5 należy połączyć serwis z interfejsem frontendowym via serwis w Kotlinie (zadanie 3) - Discord + JS ~~[Commit]()~~
 - :x: <!-- :white_check_mark: --> 4.0 stworzyć listę 5 różnych otwarć oraz zamknięć rozmowy ~~[Commit]()~~
 - :x: <!-- :white_check_mark: --> 4.5 filtrowanie po zagadnieniach związanych ze sklepem (np. ograniczenie się jedynie do ubrań oraz samego sklepu) do GPT ~~[Commit]()~~
