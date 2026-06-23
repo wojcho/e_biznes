@@ -5,6 +5,8 @@ import { loginEndpoint } from "./login-endpoint.ts";
 import { registerEndpoint } from "./register-endpoint.ts";
 import { googleOAuthStart } from "./oauth-google-start.ts";
 import { googleOAuthCallback } from "./oauth-google-callback.ts";
+import { logoutEndpoint } from "./logout-endpoint.ts";
+
 import { cookieTokenGetter } from "./auth.ts";
 import { SECRET } from "./config.ts";
 
@@ -13,6 +15,7 @@ publicRouter.post("/login", loginEndpoint);
 publicRouter.post("/register", registerEndpoint);
 publicRouter.get("/oauth/google", googleOAuthStart);
 publicRouter.get("/oauth/google/callback", googleOAuthCallback);
+publicRouter.post("/logout", logoutEndpoint);
 
 publicRouter.get("/session", (req, res) => {
   try {

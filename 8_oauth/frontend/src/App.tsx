@@ -182,6 +182,20 @@ export const App = () => {
       <section>
         <h2>Status</h2>
         {status.message} {status.code ? `(${status.code})` : ""}
+
+        <button
+          onClick={async () => {
+            await fetch(`${serviceBase}/api-public/logout`, {
+              method: "POST",
+              credentials: "include",
+            });
+
+            setLoggedIn(false);
+            setStatus({ message: "Logged out" });
+          }}
+        >
+          Logout
+        </button>
       </section>
 
       {loggedIn && (
