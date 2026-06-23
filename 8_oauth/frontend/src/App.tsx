@@ -180,6 +180,14 @@ export const App = () => {
       </section>
 
       <section>
+        <h2>GitHub Login</h2>
+
+        <a href={`${serviceBase}${apiPublicRoute}/oauth/github`}>
+          Login with GitHub
+        </a>
+      </section>
+
+      <section>
         <h2>Status</h2>
         {status.message} {status.code ? `(${status.code})` : ""}
 

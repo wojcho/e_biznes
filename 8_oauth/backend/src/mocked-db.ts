@@ -24,7 +24,7 @@ export const createUser = (username: string, password: string): number => {
 }
 
 export interface OAuthUser {
-  provider: "google";
+  provider: "google" | "github";
   providerId: string;
   username: string;
 
