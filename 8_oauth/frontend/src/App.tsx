@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Status = {
   code?: number;
@@ -18,6 +18,37 @@ export const App = () => {
   const serviceBase = "http://localhost:4567";
   const apiPublicRoute = "/api-public";
   const apiPrivateRoute = "/api"
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const res = await fetch(
+          `${serviceBase}${apiPublicRoute}/session`,
+          {
+            credentials: "include",
+          }
+        );
+
+        if (!res.ok) {
+          return;
+        }
+
+        const body = await res.json();
+
+        if (body.authenticated) {
+          setLoggedIn(true);
+          setStatus({
+            code: 200,
+            message: "Logged in",
+          });
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    checkSession();
+  }, []);
 
   const handleLogin: React.SubmitEventHandler<HTMLFormElement> = async(e: React.SubmitEvent<HTMLFormElement>) => { // https://stackoverflow.com/questions/68326000/cant-assign-submit-event-type#68326023
     e.preventDefault();
@@ -141,7 +172,16 @@ export const App = () => {
       </section>
 
       <section>
-        <strong>Status:</strong> {status.message} {status.code ? `(${status.code})` : ""}
+        <h2>Google Login</h2>
+
+        <a href={`${serviceBase}${apiPublicRoute}/oauth/google`}>
+          Login with Google
+        </a>
+      </section>
+
+      <section>
+        <h2>Status</h2>
+        {status.message} {status.code ? `(${status.code})` : ""}
       </section>
 
       {loggedIn && (

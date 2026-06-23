@@ -22,3 +22,31 @@ export const createUser = (username: string, password: string): number => {
   users.push({id: newId, username, password});
   return newId;
 }
+
+export interface OAuthUser {
+  provider: "google";
+  providerId: string;
+  username: string;
+
+  accessToken: string;
+  refreshToken?: string;
+}
+
+const oauthUsers: OAuthUser[] = [];
+
+export const findOAuthUser = (
+  provider: string,
+  providerId: string,
+) => {
+  return oauthUsers.find(
+    u =>
+      u.provider === provider &&
+      u.providerId === providerId
+  );
+};
+
+export const createOAuthUser = (
+  user: OAuthUser
+) => {
+  oauthUsers.push(user);
+};
