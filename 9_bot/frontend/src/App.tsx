@@ -64,25 +64,25 @@ const CONVERSATION_PRESETS: ConversationPreset[] = [
   {
     value: "catalog",
     label: "List products with categories",
-    systemPrompt: "You are a shop assistant. You explain products clearly with prices and categories.",
+    systemPrompt: "You are a shop assistant. You explain products clearly with prices and categories. Your responses are concise and focused.",
     initialUserMessage: "Could you describe what products are available?",
   },
   {
     value: "categories",
     label: "Explain product categories",
-    systemPrompt: "You are a shop assistant. You explain product categories with examples. Your description are imaginative and creative, to make the users more interested in these categories.",
+    systemPrompt: "You are a shop assistant. You explain product categories with examples. Your description are imaginative and creative, to make the users more interested in these categories. Your responses are concise and focused.",
     initialUserMessage: "Could you describe the product categories and give example products?",
   },
   {
     value: "cheapest",
     label: "Cheapest products",
-    systemPrompt: "You are a shop assistant. You help users find the cheapest products. You appeal to thriftiness of users, and make them see how you help them choose best offers.",
+    systemPrompt: "You are a shop assistant. You help users find the cheapest products. You appeal to thriftiness of users, and make them see how you help them choose best offers. Your responses are concise and focused.",
     initialUserMessage: "What are the cheapest products you have?",
   },
   {
     value: "recommendations",
     label: "Recommended products",
-    systemPrompt: "You are a shop assistant. You recommend products based on value. Do not write in a dry way. You can describe products fancifully, so the products would sell well.",
+    systemPrompt: "You are a shop assistant. You recommend products based on value. Do not write in a dry way. You can describe products fancifully, so the products would sell well. Your responses are concise and focused.",
     initialUserMessage: "What products do you recommend?",
   },
 ];
@@ -114,6 +114,20 @@ Use this data when answering user questions.
   `.trim();
 };
 
+type ConversationClosing = {
+  value: string;
+  label: string;
+  message: string;
+};
+
+const CONVERSATION_CLOSINGS: ConversationClosing[] = [
+  { value: "bye", label: "OK. Bye.", message: "OK. Bye." },
+  { value: "end", label: "That is all from me.", message: "That is all from me." },
+  { value: "thanks", label: "Thanks for your response. Until next time!", message: "Thanks for your response. Until next time!" },
+  { value: "good", label: "Very good, it was just what I sought.", message: "Very good, it was just what I sought." },
+  { value: "bad", label: "How annoying!", message: "How annoying!" },
+];
+
 export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -122,6 +136,8 @@ export default function App() {
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("Username is required to use chat");
   const [preset, setPreset] = useState<string>("general");
+  const [closing, setClosing] = useState<string | null>(null);
+  const [chatClosed, setChatClosed] = useState(false);
 
   const applyPreset = async (presetValue: string) => {
     const selected = CONVERSATION_PRESETS.find(
@@ -226,6 +242,7 @@ export default function App() {
   };
 
   const canUseChat = username.trim().length > 0;
+  const canCloseConversation = messages.length >= 2 && !chatClosed;
 
   return (
     <Container size="sm" py="xl">
@@ -268,6 +285,24 @@ export default function App() {
           disabled={!canUseChat}
         />)
         }
+
+        {canCloseConversation && (
+          <Select
+            label="Conversation closing"
+            placeholder="Choose a closing message"
+            data={CONVERSATION_CLOSINGS.map(c => ({
+              value: c.value,
+              label: c.label,
+            }))}
+            value={closing}
+            onChange={(value) => {
+              if (!value) return;
+              setClosing(value);
+              const selectedClosing = CONVERSATION_CLOSINGS.find(c => c.value === value);
+              setInput(selectedClosing.message);
+            }}
+          />
+        )}
       </Stack>
 
       {/* Chat */}
@@ -291,7 +326,7 @@ export default function App() {
           )}
         </ChatMessages>
 
-        <ChatInput
+        {!chatClosed && <ChatInput
           withEmojiPicker={false}
           withFileUpload={false}
           value={input}
@@ -299,7 +334,7 @@ export default function App() {
           onSubmit={sendMessage}
           disabled={!canUseChat}
           loading={loading}
-        />
+        />}
       </Chat>
     </Container>
   );
