@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from ollama import Client
 
 from sentence_transformers import SentenceTransformer
+from transformers import pipeline
 import numpy as np
 
 
@@ -39,7 +40,7 @@ shop_examples = [
 
 shop_vecs = model.encode(shop_examples)
 
-def classify(text):
+def classify_topic(text):
     v = model.encode([text])[0]
 
     sims = np.dot(shop_vecs, v) / (
@@ -53,12 +54,27 @@ def classify(text):
     return "shop", score
 
 
+sentiment_classifier = pipeline(
+    "sentiment-analysis",
+    model="distilbert-base-uncased-finetuned-sst-2-english"
+)
+
 @app.post("/api/respond")
 async def read_root(request: Request) -> JSONResponse:
     messages = await request.json()
 
-    label, score = classify(messages[-1]["content"])\
-    
+    last_message_content = messages[-1]["content"]
+
+    sentiment_evaluation = sentiment_classifier(last_message_content)[0]
+
+    if sentiment_evaluation["label"] == "NEGATIVE" and sentiment_evaluation["score"] > 0.7:
+        return {
+            "role": "assistant",
+            "content": "I apologize that the service was frustrating to you. You can use this link to write to a human: ..."
+        }
+
+    label, score = classify_topic(last_message_content)
+
     if label != "shop":
         return {
             "role": "assistant",
