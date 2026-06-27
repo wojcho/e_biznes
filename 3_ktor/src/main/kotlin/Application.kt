@@ -16,6 +16,10 @@ import com.slack.api.model.event.MessageEvent
 import com.slack.api.bolt.socket_mode.SocketModeApp
 import com.slack.api.Slack
 
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
+
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
 }
@@ -110,6 +114,16 @@ suspend fun Application.module() {
     }
 
     val slackClient = Slack.getInstance().methods(slackBotToken)
+
+    install(ContentNegotiation) {
+        json(
+            Json {
+                prettyPrint = true
+                isLenient = true
+                ignoreUnknownKeys = true
+            }
+        )
+    }
 
     configureRouting(kord, slackClient)
 }

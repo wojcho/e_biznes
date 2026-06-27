@@ -1,5 +1,8 @@
 package com.example
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Product(
     val id: Int,
     val name: String,
@@ -7,6 +10,7 @@ data class Product(
     val categoryId: Int
 )
 
+@Serializable
 data class Category(
     val id: Int,
     val name: String,

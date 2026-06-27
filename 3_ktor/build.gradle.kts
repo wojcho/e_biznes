@@ -3,6 +3,7 @@ import org.gradle.api.JavaVersion
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 group = "com.example"
@@ -30,6 +31,8 @@ dependencies {
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.config.yaml)
+    implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
     implementation("dev.kord:kord-core:${kordVersion}")
     implementation("com.slack.api:bolt:${boltVersion}")
     implementation("com.slack.api:bolt-socket-mode:${boltVersion}")

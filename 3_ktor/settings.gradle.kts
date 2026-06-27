@@ -5,3 +5,10 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}

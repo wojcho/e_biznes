@@ -66,5 +66,34 @@ fun Application.configureRouting(kord: Kord, slackClient: MethodsClient) {
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
+
+        get("/categories") {
+            call.respond(categories)
+        }
+
+        get("/products") {
+            val categoryId = call.request.queryParameters["categoryId"]?.toIntOrNull()
+
+            val result = if (categoryId != null) {
+                productsOfCategory(products, categoryId)
+            } else {
+                products.toList()
+            }
+
+            call.respond(result)
+        }
+
+        get("/categories/{id}/products") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: return@get call.respond(HttpStatusCode.BadRequest, "Invalid category id")
+
+            val exists = categories.any { it.id == id }
+            if (!exists) {
+                return@get call.respond(HttpStatusCode.NotFound, "Category not found")
+            }
+
+            val result = productsOfCategory(products, id)
+            call.respond(result)
+        }
     }
 }
