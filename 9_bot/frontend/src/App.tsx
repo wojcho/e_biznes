@@ -5,7 +5,7 @@ import {
   ChatMessage,
   ChatInput,
 } from "mantine-chat-components";
-import { Container, Input, Button, Stack } from "@mantine/core";
+import { Container, Input, Stack } from "@mantine/core";
 
 type Message = {
   role: "user" | "assistant" | "system";
@@ -27,16 +27,37 @@ export default function App() {
 
   const appendStateMessage = async (newMessage: Message) => {
     setMessages(prev => {
-      const next = [...prev, newMessage];
-
-      // void fetch("http://localhost:8000/", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(newMessage),
-      // });
-
-      return next;
+      return [...prev, newMessage];
     });
+
+    // Substitute user indicator for username when sending to message forwarding service
+    const from =
+      newMessage.role === "user"
+        ? username
+        : "assistant";
+
+    const to =
+      newMessage.role === "user"
+        ? "assistant"
+        : username;
+
+    const payload = new URLSearchParams();
+    payload.append("from", from);
+    payload.append("to", to);
+    payload.append("content", newMessage.content);
+    payload.append("priority", "High"); // Always high priority for now
+
+    try {
+      await fetch("http://localhost:8080/messages/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: payload.toString(),
+      });
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
   };
 
   const sendMessage = async () => {
@@ -90,6 +111,9 @@ export default function App() {
                 setUsernameError("");
               } else {
                 setUsernameError("Username is required to use chat");
+              }
+              if (e.currentTarget.value.trim() === "assistant") {
+                setUsernameError("User cannot be named assistant");
               }
               setUsername(e.currentTarget.value);
             }}
