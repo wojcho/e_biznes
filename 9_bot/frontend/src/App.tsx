@@ -138,6 +138,7 @@ export default function App() {
   const [preset, setPreset] = useState<string>("general");
   const [closing, setClosing] = useState<string | null>(null);
   const [chatClosed, setChatClosed] = useState(false);
+  const [isLastMessage, setIsLastMessage] = useState(false);
 
   const applyPreset = async (presetValue: string) => {
     const selected = CONVERSATION_PRESETS.find(
@@ -239,6 +240,10 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+
+    if (isLastMessage) {
+      setChatClosed(true);
+    }
   };
 
   const canUseChat = username.trim().length > 0;
@@ -300,6 +305,7 @@ export default function App() {
               setClosing(value);
               const selectedClosing = CONVERSATION_CLOSINGS.find(c => c.value === value);
               setInput(selectedClosing.message);
+              setIsLastMessage(true);
             }}
           />
         )}
