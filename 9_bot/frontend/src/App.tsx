@@ -5,7 +5,7 @@ import {
   ChatMessage,
   ChatInput,
 } from "mantine-chat-components";
-import { Container } from "@mantine/core";
+import { Container, Input, Button, Stack } from "@mantine/core";
 
 type Message = {
   role: "user" | "assistant" | "system";
@@ -22,38 +22,83 @@ export default function App() {
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("Username is required to use chat");
+
+  const appendStateMessage = async (newMessage: Message) => {
+    setMessages(prev => {
+      const next = [...prev, newMessage];
+
+      // void fetch("http://localhost:8000/", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(newMessage),
+      // });
+
+      return next;
+    });
+  };
 
   const sendMessage = async () => {
+    if (!username.trim()) {
+      setUsernameError("Username is required to use chat");
+      return;
+    }
+
     if (!input.trim()) return;
 
-    const newMessages: Message[] = [
-      ...messages,
-      { role: "user", content: input },
-    ];
+    const userMessage: Message = {
+      role: "user",
+      content: input,
+    };
 
-    setMessages(newMessages);
     setInput("");
     setLoading(true);
+
+    appendStateMessage(userMessage);
 
     try {
       const res = await fetch("http://localhost:8000/api/respond", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newMessages),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify([...messages, userMessage]),
       });
 
-      const data = await res.json();
+      const assistantMessage = await res.json();
 
-      setMessages((prev) => [...prev, data]);
+      appendStateMessage(assistantMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  const canUseChat = username.trim().length > 0;
+
   return (
     <Container size="sm" py="xl">
+      <Stack mb="md">
+        <Input.Wrapper
+          label="Username"
+          error={usernameError}
+          required
+        >
+          <Input
+            placeholder="Enter your username..."
+            value={username}
+            onChange={(e) => {
+              if (e.currentTarget.value.trim()) {
+                setUsernameError("");
+              } else {
+                setUsernameError("Username is required to use chat");
+              }
+              setUsername(e.currentTarget.value);
+            }}
+            error={usernameError}
+          />
+        </Input.Wrapper>
+      </Stack>
+
+      {/* Chat */}
       <Chat h={400}>
         <ChatMessages>
           {messages
@@ -68,7 +113,9 @@ export default function App() {
             ))}
 
           {loading && (
-            <ChatMessage sender="assistant">Assistant is typing...</ChatMessage>
+            <ChatMessage sender="assistant">
+              Assistant is typing...
+            </ChatMessage>
           )}
         </ChatMessages>
 
@@ -78,6 +125,7 @@ export default function App() {
           value={input}
           onValueChange={setInput}
           onSubmit={sendMessage}
+          disabled={!canUseChat}
         />
       </Chat>
     </Container>
