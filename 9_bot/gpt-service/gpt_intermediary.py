@@ -57,8 +57,8 @@ def classify(text):
 async def read_root(request: Request) -> JSONResponse:
     messages = await request.json()
 
-    label, score = classify(messages[-1]["content"])
-    print(messages[-1]["content"], label, score)
+    label, score = classify(messages[-1]["content"])\
+    
     if label != "shop":
         return {
             "role": "assistant",
