@@ -2,7 +2,14 @@ import ItemTable from "./ItemTable";
 import { useShop } from "./ShopContext";
 
 export default function Basket() {
-  const { basket, productsById, loading, error, refreshBasket } = useShop();
+  const {
+    basket,
+    productsById,
+    loading,
+    error,
+    refreshBasket,
+    removeFromBasket,
+  } = useShop();
 
   if (loading) return <div>Loading basket…</div>;
   if (error) return <div>Error: {error}</div>;
@@ -25,7 +32,7 @@ export default function Basket() {
       {basket.length === 0 ? (
         <div>Basket is empty.</div>
       ) : (
-        <ItemTable rows={rows} isForBasket />
+        <ItemTable rows={rows} isForBasket onDelete={removeFromBasket} />
       )}
       <button onClick={refreshBasket}>Refresh</button>
     </div>
