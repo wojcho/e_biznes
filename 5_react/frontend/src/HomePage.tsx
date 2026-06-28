@@ -1,5 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material";
-import { Link as RouterLink } from "react-router";
+import { Stack, Typography } from "@mui/material";
 
 export default function HomePage() {
   return (
@@ -7,18 +6,9 @@ export default function HomePage() {
       <Typography variant="h4">Welcome</Typography>
 
       <Typography color="text.secondary">
-        Choose a section to manage products or users.
+        You can open products, and if you are logged in (mocked), then add them
+        to your basket.
       </Typography>
-
-      <Stack direction="row" spacing={2}>
-        <Button component={RouterLink} to="/products" variant="contained">
-          Products
-        </Button>
-
-        <Button component={RouterLink} to="/users" variant="outlined">
-          Users
-        </Button>
-      </Stack>
     </Stack>
   );
 }

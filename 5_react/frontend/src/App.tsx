@@ -17,7 +17,7 @@ import UserPage from "./UserPage";
 import UsersIndex from "./UsersIndex";
 
 function AppShell() {
-  const { selectedUserId, users } = useShop();
+  const { selectedUserId, users, setSelectedUserId } = useShop();
 
   const selectedUser = users.find((u) => u.id === selectedUserId) ?? null;
 
@@ -39,14 +39,31 @@ function AppShell() {
             Products
           </Button>
 
-          <Button color="inherit" component={RouterLink} to="/users">
-            Users
-          </Button>
+          {/* Selected-user-dependent UI */}
+          {selectedUserId ? (
+            <>
+              <Button
+                color="inherit"
+                component={RouterLink}
+                to={`/users/${selectedUserId}`}
+              >
+                Basket
+              </Button>
 
-          {selectedUser ? (
-            <Chip label={selectedUser.name} size="small" color="info" />
+              <Button color="inherit" onClick={() => setSelectedUserId(null)}>
+                <Chip
+                  label={selectedUser?.name ?? "User"}
+                  size="small"
+                  color="secondary"
+                  sx={{ mr: 1 }}
+                />
+                Log out
+              </Button>
+            </>
           ) : (
-            <Chip label="No user selected" size="small" color="warning" />
+            <Button color="inherit" component={RouterLink} to="/users">
+              Log in
+            </Button>
           )}
         </Toolbar>
       </AppBar>
