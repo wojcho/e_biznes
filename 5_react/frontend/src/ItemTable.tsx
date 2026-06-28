@@ -1,3 +1,21 @@
+import {
+  Chip,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+
 export type Row = {
   id: number;
   name: string;
@@ -11,9 +29,7 @@ type Props = {
   isForBasket?: boolean;
 
   onDelete?: (id: number) => void | Promise<void>;
-
   onEdit?: (id: number) => void;
-
   onAddToBasket?: (id: number, quantity?: number) => void | Promise<void>;
 };
 
@@ -24,49 +40,91 @@ export default function ItemTable({
   onEdit,
   onAddToBasket,
 }: Props) {
-  if (!rows || rows.length === 0) return <div>No items.</div>;
+  if (rows.length === 0) {
+    return <Typography color="text.secondary">No items.</Typography>;
+  }
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Price</th>
-          <th>{isForBasket ? "Quantity" : "In stock"}</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r) => (
-          <tr key={r.id}>
-            <td>{r.id}</td>
-            <td>{r.name}</td>
-            <td>{r.description ?? "-"}</td>
-            <td>
-              {r.priceCents != null
-                ? `$${(r.priceCents / 100).toFixed(2)}`
-                : "-"}
-            </td>
-            <td>{r.inStockOrQuantity}</td>
-            <td>
-              {!isForBasket && onAddToBasket && (
-                <button onClick={() => onAddToBasket(r.id)}>
-                  Add to Basket
-                </button>
-              )}
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell width={80}>ID</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell align="right">Price</TableCell>
+            <TableCell align="center">
+              {isForBasket ? "Quantity" : "Stock"}
+            </TableCell>
+            <TableCell align="right">Actions</TableCell>
+          </TableRow>
+        </TableHead>
 
-              {!isForBasket && onEdit && (
-                <button onClick={() => onEdit(r.id)}>Edit</button>
-              )}
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow hover key={row.id}>
+              <TableCell>{row.id}</TableCell>
 
-              {onDelete && (
-                <button onClick={() => onDelete(r.id)}>Delete</button>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+              <TableCell>{row.name}</TableCell>
+
+              <TableCell>
+                <Typography variant="body2" color="text.secondary">
+                  {row.description}
+                </Typography>
+              </TableCell>
+
+              <TableCell align="right">
+                {row.priceCents == null
+                  ? "-"
+                  : `$${(row.priceCents / 100).toFixed(2)}`}
+              </TableCell>
+
+              <TableCell align="center">
+                <Chip
+                  size="small"
+                  label={row.inStockOrQuantity}
+                  color={
+                    isForBasket
+                      ? "primary"
+                      : row.inStockOrQuantity > 0
+                        ? "success"
+                        : "error"
+                  }
+                />
+              </TableCell>
+
+              <TableCell align="right">
+                {!isForBasket && onAddToBasket && (
+                  <Tooltip title="Add to basket">
+                    <IconButton
+                      color="primary"
+                      onClick={() => onAddToBasket(row.id)}
+                    >
+                      <AddShoppingCartIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
+                {!isForBasket && onEdit && (
+                  <Tooltip title="Edit">
+                    <IconButton color="primary" onClick={() => onEdit(row.id)}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
+                {onDelete && (
+                  <Tooltip title={isForBasket ? "Remove" : "Delete"}>
+                    <IconButton color="error" onClick={() => onDelete(row.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

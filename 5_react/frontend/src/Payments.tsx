@@ -1,32 +1,62 @@
 import { useState } from "react";
-import { useShop } from "./ShopContext";
+
+import { Alert, Button, Chip, Stack, Typography } from "@mui/material";
+
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+
 import type { PaymentResponse } from "./apiClient";
+import { useShop } from "./ShopContext";
 
 export default function Payments() {
   const { checkout, selectedUserId } = useShop();
-  const [checkoutResult, setCheckoutResult] = useState<PaymentResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  const runCheckout = async (paymentMethod = "card") => {
+  const [result, setResult] = useState<PaymentResponse | null>(null);
+
+  const [loading, setLoading] = useState(false);
+
+  async function handleCheckout() {
     if (!selectedUserId) return;
-    setError(null);
-    const result = await checkout(paymentMethod);
-    if (result) setCheckoutResult(result);
-  };
+
+    setLoading(true);
+
+    try {
+      const response = await checkout("card");
+
+      if (response) {
+        setResult(response);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div>
-      <button onClick={() => runCheckout("card")}>Checkout with Card</button>
+    <Stack spacing={3}>
+      <Typography variant="h5">Checkout</Typography>
 
-      {error && <div>Error: {error}</div>}
-      {checkoutResult && (
-        <div>
-          <strong>{checkoutResult.success ? "Success" : "Failed"}:</strong> {checkoutResult.message}
-          {checkoutResult.totalCents != null && (
-            <div>Total: ${(checkoutResult.totalCents / 100).toFixed(2)}</div>
-          )}
-        </div>
+      <Button
+        variant="contained"
+        startIcon={<CreditCardIcon />}
+        onClick={handleCheckout}
+        disabled={loading || !selectedUserId}
+      >
+        Checkout with Card
+      </Button>
+
+      {result && (
+        <Alert severity={result.success ? "success" : "error"}>
+          <Stack spacing={1}>
+            <Typography>{result.message}</Typography>
+
+            {result.totalCents != null && (
+              <Chip
+                color="success"
+                label={`Total $${(result.totalCents / 100).toFixed(2)}`}
+              />
+            )}
+          </Stack>
+        </Alert>
       )}
-    </div>
+    </Stack>
   );
 }

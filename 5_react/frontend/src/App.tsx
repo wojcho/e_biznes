@@ -1,72 +1,53 @@
-import { Routes, Route, Link, useParams } from "react-router";
-import Products from "./Products";
-import UserSelector from "./UserSelector";
-import Basket from "./Basket";
-import Payments from "./Payments";
+import {
+  AppBar,
+  Button,
+  Container,
+  CssBaseline,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { Link as RouterLink, Route, Routes } from "react-router";
+
 import type { ApiClient } from "./apiClient";
 import { ShopProvider } from "./ShopContext";
+import HomePage from "./HomePage";
+import ProductsPage from "./ProductsPage";
+import UserPage from "./UserPage";
+import UsersIndex from "./UsersIndex";
 
 export default function App({ api }: { api: ApiClient }) {
   return (
     <ShopProvider api={api}>
-      <div>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/products">Products</Link>
-          <Link to="/users">Users</Link>
-        </nav>
-        <hr />
+      <CssBaseline />
+
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Shop
+          </Typography>
+
+          <Button color="inherit" component={RouterLink} to="/">
+            Home
+          </Button>
+
+          <Button color="inherit" component={RouterLink} to="/products">
+            Products
+          </Button>
+
+          <Button color="inherit" component={RouterLink} to="/users">
+            Users
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/users" element={<UsersIndex />} />
           <Route path="/users/:id" element={<UserPage />} />
         </Routes>
-      </div>
+      </Container>
     </ShopProvider>
-  );
-}
-
-function HomePage() {
-  return (<div>
-    <h2>Welcome</h2>
-    <p>
-      Select a route: {" "}
-      <Link to="/products">Products</Link>
-      {" "} or {" "}
-      <Link to="/users">Users</Link>
-      .
-    </p>
-  </div>);
-}
-
-function ProductsPage() {
-  return (
-    <div>
-      <h2>Products</h2>
-      <Products/>
-    </div>
-  );
-}
-
-function UsersIndex() {
-  return (
-    <div>
-      <h2>Users</h2>
-      <UserSelector/>
-    </div>
-  );
-}
-
-function UserPage() {
-  const { id } = useParams<{ id: string }>();
-  const userId = id ? Number(id) : null;
-  if (!userId) return <div>Invalid user id.</div>;
-  return (
-    <div>
-      <h2>User {userId}</h2>
-      <Basket />
-      <Payments />
-    </div>
   );
 }

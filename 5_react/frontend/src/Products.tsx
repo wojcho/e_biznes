@@ -1,9 +1,19 @@
-import { useShop } from "./ShopContext";
+import { useMemo, useState } from "react";
+
+import { Alert, Box, Button, CircularProgress, Stack } from "@mui/material";
+
+import AddIcon from "@mui/icons-material/Add";
+import RefreshIcon from "@mui/icons-material/Refresh";
+
+import type {
+  CreateProductRequest,
+  Product,
+  UpdateProductRequest,
+} from "./apiClient";
+
 import ItemTable from "./ItemTable";
-import CreateProductForm from "./CreateProductForm";
-import { useState } from "react";
-import EditProductForm from "./EditProductForm";
-import type { Product } from "./apiClient";
+import ProductDialog from "./ProductDialog";
+import { useShop } from "./ShopContext";
 
 export default function Products() {
   const {
@@ -11,47 +21,100 @@ export default function Products() {
     loading,
     error,
     loadProducts,
+    createProduct,
     updateProduct,
     deleteProduct,
     addToBasket,
   } = useShop();
+
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
 
-  if (loading) return <div>Loading products...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!products || products.length === 0) return <div>No products found.</div>;
+  const rows = useMemo(
+    () =>
+      products.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description ?? "-",
+        priceCents: p.priceCents,
+        inStockOrQuantity: p.inStock,
+      })),
+    [products],
+  );
 
-  const rows = products.map((p) => ({
-    id: p.id,
-    name: p.name,
-    description: p.description ?? "-",
-    priceCents: p.priceCents,
-    inStockOrQuantity: p.inStock,
-  }));
+  function openCreateDialog() {
+    setEditing(null);
+    setDialogOpen(true);
+  }
+
+  function openEditDialog(id: number) {
+    const product = products.find((p) => p.id === id);
+
+    if (!product) return;
+
+    setEditing(product);
+    setDialogOpen(true);
+  }
+
+  async function handleSubmit(
+    request: CreateProductRequest | UpdateProductRequest,
+  ) {
+    if (editing) {
+      await updateProduct(editing.id, request as UpdateProductRequest);
+    } else {
+      await createProduct(request as CreateProductRequest);
+    }
+  }
 
   return (
-    <div>
-      <ItemTable
-        rows={rows}
-        onDelete={deleteProduct}
-        onAddToBasket={addToBasket}
-        onEdit={(id) => {
-          const product = products.find((p) => p.id === id);
-          if (product) setEditing(product);
+    <Stack spacing={3}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
-      />
-      <CreateProductForm />
-      {editing && (
-        <EditProductForm
-          product={editing}
-          onSave={async (req) => {
-            await updateProduct(editing.id, req);
-            setEditing(null);
-          }}
-          onCancel={() => setEditing(null)}
+      >
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={openCreateDialog}
+        >
+          New Product
+        </Button>
+
+        <Button
+          variant="outlined"
+          startIcon={<RefreshIcon />}
+          onClick={loadProducts}
+        >
+          Refresh
+        </Button>
+      </Box>
+
+      {loading && (
+        <Box sx={{ textAlign: "center" }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {error && <Alert severity="error">{error}</Alert>}
+
+      {!loading && (
+        <ItemTable
+          rows={rows}
+          onDelete={deleteProduct}
+          onAddToBasket={addToBasket}
+          onEdit={openEditDialog}
         />
       )}
-      <button onClick={loadProducts}>Refresh products</button>
-    </div>
+
+      <ProductDialog
+        open={dialogOpen}
+        product={editing}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={handleSubmit}
+      />
+    </Stack>
   );
 }
