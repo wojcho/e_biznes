@@ -1,6 +1,7 @@
 import {
   AppBar,
   Button,
+  Chip,
   Container,
   CssBaseline,
   Toolbar,
@@ -9,15 +10,19 @@ import {
 import { Link as RouterLink, Route, Routes } from "react-router";
 
 import type { ApiClient } from "./apiClient";
-import { ShopProvider } from "./ShopContext";
+import { useShop, ShopProvider } from "./ShopContext";
 import HomePage from "./HomePage";
 import ProductsPage from "./ProductsPage";
 import UserPage from "./UserPage";
 import UsersIndex from "./UsersIndex";
 
-export default function App({ api }: { api: ApiClient }) {
+function AppShell() {
+  const { selectedUserId, users } = useShop();
+
+  const selectedUser = users.find((u) => u.id === selectedUserId) ?? null;
+
   return (
-    <ShopProvider api={api}>
+    <>
       <CssBaseline />
 
       <AppBar position="static">
@@ -37,6 +42,12 @@ export default function App({ api }: { api: ApiClient }) {
           <Button color="inherit" component={RouterLink} to="/users">
             Users
           </Button>
+
+          {selectedUser ? (
+            <Chip label={selectedUser.name} size="small" color="info" />
+          ) : (
+            <Chip label="No user selected" size="small" color="warning" />
+          )}
         </Toolbar>
       </AppBar>
 
@@ -48,6 +59,14 @@ export default function App({ api }: { api: ApiClient }) {
           <Route path="/users/:id" element={<UserPage />} />
         </Routes>
       </Container>
+    </>
+  );
+}
+
+export default function App({ api }: { api: ApiClient }) {
+  return (
+    <ShopProvider api={api}>
+      <AppShell />
     </ShopProvider>
   );
 }

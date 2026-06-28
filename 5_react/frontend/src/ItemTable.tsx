@@ -22,6 +22,7 @@ export type Row = {
   description: string;
   priceCents: number | null;
   inStockOrQuantity: number;
+  basketQty?: number;
 };
 
 type Props = {
@@ -31,6 +32,8 @@ type Props = {
   onDelete?: (id: number) => void | Promise<void>;
   onEdit?: (id: number) => void;
   onAddToBasket?: (id: number, quantity?: number) => void | Promise<void>;
+
+  isAddToBasketDisabled?: boolean;
 };
 
 export default function ItemTable({
@@ -39,6 +42,7 @@ export default function ItemTable({
   onDelete,
   onEdit,
   onAddToBasket,
+  isAddToBasketDisabled,
 }: Props) {
   if (rows.length === 0) {
     return <Typography color="text.secondary">No items.</Typography>;
@@ -95,14 +99,33 @@ export default function ItemTable({
 
               <TableCell align="right">
                 {!isForBasket && onAddToBasket && (
-                  <Tooltip title="Add to basket">
-                    <IconButton
-                      color="primary"
-                      onClick={() => onAddToBasket(row.id)}
+                  <>
+                    <Tooltip
+                      title={
+                        isAddToBasketDisabled
+                          ? "Select a user first"
+                          : "Add to basket"
+                      }
                     >
-                      <AddShoppingCartIcon />
-                    </IconButton>
-                  </Tooltip>
+                      <span>
+                        <IconButton
+                          color="primary"
+                          disabled={isAddToBasketDisabled}
+                          onClick={() => onAddToBasket(row.id)}
+                        >
+                          <AddShoppingCartIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                    {row.basketQty != null && row.basketQty > 0 && (
+                      <Chip
+                        size="small"
+                        label={`In basket: ${row.basketQty}`}
+                        color="warning"
+                        sx={{ ml: 1 }}
+                      />
+                    )}
+                  </>
                 )}
 
                 {!isForBasket && onEdit && (

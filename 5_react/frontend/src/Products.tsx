@@ -17,6 +17,7 @@ import { useShop } from "./ShopContext";
 
 export default function Products() {
   const {
+    selectedUserId,
     products,
     loading,
     error,
@@ -25,10 +26,19 @@ export default function Products() {
     updateProduct,
     deleteProduct,
     addToBasket,
+    basket,
   } = useShop();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
+
+  const basketQtyByProductId = useMemo(() => {
+    const map: Record<number, number> = {};
+    basket?.forEach((item) => {
+      map[item.productId] = item.quantity;
+    });
+    return map;
+  }, [basket]);
 
   const rows = useMemo(
     () =>
@@ -38,8 +48,9 @@ export default function Products() {
         description: p.description ?? "-",
         priceCents: p.priceCents,
         inStockOrQuantity: p.inStock,
+        basketQty: basketQtyByProductId[p.id] ?? 0,
       })),
-    [products],
+    [products, basketQtyByProductId],
   );
 
   function openCreateDialog() {
@@ -105,6 +116,7 @@ export default function Products() {
           rows={rows}
           onDelete={deleteProduct}
           onAddToBasket={addToBasket}
+          isAddToBasketDisabled={!selectedUserId}
           onEdit={openEditDialog}
         />
       )}
